@@ -2,6 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "calc.fullname" . }}
+  annotations:
+   kubernetes.io/elb.class: union
+   kubernetes.io/elb.subnet-id: 87335469-74cb-439a-aaa2-92b1475ca1bf
+   kubernetes.io/elb.enterpriseID: "0"
+   kubernetes.io/elb.autocreate: >-
+     {"type":"public","bandwidth_name":"cce-bandwidth-1664797272505","bandwidth_chargemode":"traffic","bandwidth_size":5,"bandwidth_sharetype":"PER","eip_type":"5_bgp"}
+   kubernetes.io/elb.lb-algorithm: ROUND_ROBIN
+   kubernetes.io/elb.health-check-flag: "off"
   labels:
     {{- include "calc.labels" . | nindent 4 }}
 spec:
@@ -11,5 +19,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 443
+      targetPort: http
+      protocol: TCP
+      name: https
+  externalTrafficPolicy: Cluster
   selector:
     {{- include "calc.selectorLabels" . | nindent 4 }}
